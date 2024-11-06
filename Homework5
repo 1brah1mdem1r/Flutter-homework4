@@ -1,0 +1,93 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // Başlangıçta açık tema (Light Theme) olarak başlatıyoruz.
+  bool isDarkTheme = false;
+
+  // Karanlık tema (Dark Theme) ve açık tema (Light Theme) yapılandırması.
+  ThemeData lightTheme = ThemeData(
+    brightness: Brightness.light,
+    primarySwatch: Colors.blue,
+    buttonTheme: ButtonThemeData(
+      buttonColor: Colors.blue, // Buton rengi
+      textTheme: ButtonTextTheme.primary,
+    ),
+    scaffoldBackgroundColor: Colors.white, // Arka plan rengi
+    textTheme: TextTheme(
+      bodyLarge: TextStyle(color: Colors.black), // bodyLarge kullanarak metin rengini belirledik
+    ),
+  );
+
+  ThemeData darkTheme = ThemeData(
+    brightness: Brightness.dark,
+    primarySwatch: Colors.blue,
+    buttonTheme: ButtonThemeData(
+      buttonColor: Colors.blue, // Buton rengi
+      textTheme: ButtonTextTheme.primary,
+    ),
+    scaffoldBackgroundColor: Colors.black, // Arka plan rengi
+    textTheme: TextTheme(
+      bodyLarge: TextStyle(color: Colors.white), // bodyLarge kullanarak metin rengini belirledik
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Tema Değiştirici',
+      theme: isDarkTheme ? darkTheme : lightTheme, // Tema değişimini buradan kontrol ediyoruz.
+      home: HomeScreen(
+        onThemeChange: _toggleTheme, // Tema değişim fonksiyonunu ana ekrana geçiriyoruz.
+      ),
+    );
+  }
+
+  // Tema değişimini sağlayan fonksiyon
+  void _toggleTheme() {
+    setState(() {
+      isDarkTheme = !isDarkTheme; // Temayı değiştir
+    });
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  final Function onThemeChange;
+
+  HomeScreen({required this.onThemeChange});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Tema Değiştirici'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Şu anda ${Theme.of(context).brightness == Brightness.dark ? "Karanlık" : "Açık"} temadasınız.',
+              style: Theme.of(context).textTheme.bodyLarge, // bodyLarge stilini kullanıyoruz
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                onThemeChange(); // Tema değişim fonksiyonunu tetikleyin
+              },
+              child: Text('Temayı Değiştir'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
