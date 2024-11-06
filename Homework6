@@ -1,0 +1,114 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Form Validation',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: RegistrationForm(),
+    );
+  }
+}
+
+class RegistrationForm extends StatefulWidget {
+  @override
+  _RegistrationFormState createState() => _RegistrationFormState();
+}
+
+class _RegistrationFormState extends State<RegistrationForm> {
+  // GlobalKey<FormState> ile form durumunu yöneteceğiz
+  final _formKey = GlobalKey<FormState>();
+
+  // TextEditingController'lar ile form alanlarını yöneteceğiz
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  // Form submit işlemi
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      // Form doğruysa, kullanıcıya başarılı mesajı gösterilebilir
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Form başarıyla gönderildi!')));
+    } else {
+      // Form yanlışsa hata mesajı gösterilir
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lütfen tüm alanları doğru doldurun!')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Kayıt Formu'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey, // Formu yöneten key
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // İsim alanı
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'İsim'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'İsim boş bırakılamaz';
+                  }
+                  return null; // Hata yoksa null döndür
+                },
+              ),
+              // E-posta alanı
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'E-posta'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  // E-posta formatı kontrolü
+                  if (value == null || value.isEmpty) {
+                    return 'E-posta boş bırakılamaz';
+                  }
+                  // Basit bir e-posta doğrulaması
+                  final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+                  if (!emailRegex.hasMatch(value)) {
+                    return 'Geçerli bir e-posta adresi giriniz';
+                  }
+                  return null;
+                },
+              ),
+              // Şifre alanı
+              TextFormField(
+                controller: _passwordController,
+                decoration: InputDecoration(labelText: 'Şifre'),
+                obscureText: true, // Şifreyi gizlemek için
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Şifre boş bırakılamaz';
+                  }
+                  if (value.length < 6) {
+                    return 'Şifre en az 6 karakter olmalı';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              // Formu gönderme butonu
+              ElevatedButton(
+                onPressed: _submitForm,
+                child: Text('Kaydı Tamamla'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
